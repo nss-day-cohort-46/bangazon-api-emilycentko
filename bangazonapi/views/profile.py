@@ -272,7 +272,7 @@ class Profile(ViewSet):
 
         return Response({}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['get', 'post'], detail=False)
     def favoritesellers(self, request):
         """
         @api {GET} /profile/favoritesellers GET favorite sellers
@@ -323,10 +323,16 @@ class Profile(ViewSet):
         customer = Customer.objects.get(user=request.auth.user)
         favorites = Favorite.objects.filter(customer=customer)
 
+        if request.method == "POST":
+            try:
+                customer.favorites.add(customer)
+                return Response({}, status=status.HTTP_201_CREATED)
+            except Exception as ex:
+                return Response({'message': ex.args[0]})
+
         serializer = FavoriteSerializer(
             favorites, many=True, context={'request': request})
         return Response(serializer.data)
-
 
 class LineItemSerializer(serializers.HyperlinkedModelSerializer):
     """JSON serializer for products
