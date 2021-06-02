@@ -4,7 +4,7 @@ from django.shortcuts import render
 from bangazonapi.models import Favorite, Customer
 from bangazonreports.views import Connection
 
-def favseller_list(request):
+def favorite_sellers_list(request):
 
     if request.method == 'GET':
         # Connect to project database
@@ -19,7 +19,7 @@ def favseller_list(request):
                     f.seller_id,
                     f.customer_id,
                     u.id user_id,
-                    u.first_name || ' ' || u.last_name AS full_name
+                    u.first_name || ' ' || u.last_name AS full_customer_name
                 FROM
                     bangazonapi_favorite f
                 JOIN
@@ -32,9 +32,10 @@ def favseller_list(request):
             favorited_sellers_by_customer = {}
 
             for row in dataset:
-                favorite_seller = Favorite()
-                favorite_seller.seller_id = row["seller_id"]
-                favorite_seller.customer_id = row["customer_id"]
+
+                favorite_seller = Customer.objects.get(pk=row["seller_id"])
+
+            
 
                 uid = row["user_id"]
 
@@ -43,14 +44,14 @@ def favseller_list(request):
                 else:
                     favorited_sellers_by_customer[uid] = {}
                     favorited_sellers_by_customer[uid]["id"] = uid
-                    favorited_sellers_by_customer[uid]["full_name"] = row["full_name"]
+                    favorited_sellers_by_customer[uid]["full_customer_name"] = row["full_customer_name"]
                     favorited_sellers_by_customer[uid]["favorite_sellers"] = [favorite_seller]
         
         list_of_favorited_sellers = favorited_sellers_by_customer.values()
 
-        template = 'reports/list_fav_sellers.html'
+        template = 'users/list_fav_sellers.html'
         context = {
-            'favseller_list': list_of_favorited_sellers
+            'favorite_sellers_list': list_of_favorited_sellers
         }
 
         return render(request, template, context)

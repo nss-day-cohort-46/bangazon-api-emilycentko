@@ -8,16 +8,16 @@
   <body>
     <h1>Favorited Sellers by Customer</h1>
 
-    {% for customer in favseller_list %}
-        <h2>Customer: {{ customer.user.first_name }} {{ customer.user.last_name }}</h2>
-        <h3>Favorite Sellers:</h3>
-        <ol>
-            {% for seller in customer.favorite_sellers %}
-            <li>
-                Sellers: {{ user.full_name }}
-            </li>
-            {% endfor %}
-        </ol>
+    {% for customer in favorite_sellers_list %}
+        <h2>Customer: {{ customer.full_customer_name }}</h2>
+          <h3>Favorite Sellers:</h3>
+          <ul>
+              {% for seller in customer.favorite_sellers %}
+              <li>
+                  {{ seller.user.first_name }} {{ seller.user.last_name }}
+              </li>
+              {% endfor %}
+          </ul>
     {% endfor %}
   </body>
 </html>
