@@ -6,7 +6,7 @@ from bangazonreports.views import Connection
 
 def inexpensive_products_list(request):
 
-    least_expensive_products = Product.objects.filter(price__lte = 1000)
+    least_expensive_products = Product.objects.filter(price__lte = 999)
 
     template = 'products/list_of_inexpensive_products.html'
     context = {
