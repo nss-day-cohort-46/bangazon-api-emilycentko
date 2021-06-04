@@ -25,7 +25,6 @@ class Product(SafeDeleteModel):
     image_path = models.ImageField(
         upload_to='products', height_field=None,
         width_field=None, max_length=None, null=True)
-    # liked = models.ManyToManyField(Customer, related_name="liked")
 
     @property
     def number_sold(self):

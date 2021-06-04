@@ -12,6 +12,7 @@ from bangazonapi.models import Product, Customer, ProductCategory
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, FormParser
 
+
 class ProductSerializer(serializers.ModelSerializer):
     """JSON serializer for products"""
     class Meta:
@@ -21,6 +22,15 @@ class ProductSerializer(serializers.ModelSerializer):
                   'average_rating', 'can_be_rated', )
         depth = 1
 
+class CustomerSerializer(serializers.ModelSerializer):
+    """JSON serializer for products"""
+
+    liked = ProductSerializer(many=True)
+
+    class Meta:
+        model = Customer
+        fields = ('id', 'user', 'liked')
+        depth = 1
 
 class Products(ViewSet):
     """Request handlers for Products in the Bangazon Platform"""
@@ -303,7 +313,7 @@ class Products(ViewSet):
 
         return Response(None, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
-    @action(methods=['post', 'get', 'delete'], detail=True)
+    @action(methods=['post', 'delete'], detail=True)
     def like(self, request, pk=None):
 
         customer = Customer.objects.get(user=request.auth.user)
@@ -328,10 +338,11 @@ class Products(ViewSet):
             except Exception as ex:
                 return Response({'message': ex.args[0]})
     
-    @action(methods=['get'], detail=True)
+    @action(methods=['get'], detail=False)
     def liked(self, request):
 
         customer = Customer.objects.get(user=request.auth.user)
 
         if request.method == "GET":
-           
+           serializer = CustomerSerializer(customer, many=False, context={'request': request})
+           return Response(serializer.data)
