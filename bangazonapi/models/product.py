@@ -65,6 +65,15 @@ class Product(SafeDeleteModel):
         if len(ratings) != 0:
             avg = total_rating / len(ratings)
             return avg
+    
+    @property
+    def likes(self):
+        return self.__likes
+    
+    @likes.setter
+    def liked(self, value):
+        self.__likes = value
+
 
     class Meta:
         verbose_name = ("product")
