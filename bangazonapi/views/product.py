@@ -12,7 +12,6 @@ from bangazonapi.models import Product, Customer, ProductCategory
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, FormParser
 
-
 class ProductSerializer(serializers.ModelSerializer):
     """JSON serializer for products"""
     class Meta:
@@ -303,3 +302,36 @@ class Products(ViewSet):
             return Response(None, status=status.HTTP_204_NO_CONTENT)
 
         return Response(None, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    @action(methods=['post', 'get', 'delete'], detail=True)
+    def like(self, request, pk=None):
+
+        customer = Customer.objects.get(user=request.auth.user)
+
+        if request.method == "POST":
+            product = Product.objects.get(pk=pk)
+
+            try:
+                customer.liked.add(product)
+
+                return Response(None, status=status.HTTP_201_CREATED)
+            except Exception as ex:
+                return Response({'message': ex.args[0]})
+
+        if request.method == "DELETE":
+            product = Product.objects.get(pk=pk)
+
+            try:
+                customer.liked.remove(product)
+
+                return Response(None, status=status.HTTP_204_NO_CONTENT)
+            except Exception as ex:
+                return Response({'message': ex.args[0]})
+    
+    @action(methods=['get'], detail=True)
+    def liked(self, request):
+
+        customer = Customer.objects.get(user=request.auth.user)
+
+        if request.method == "GET":
+           

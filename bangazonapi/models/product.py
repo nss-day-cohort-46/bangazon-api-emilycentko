@@ -25,6 +25,7 @@ class Product(SafeDeleteModel):
     image_path = models.ImageField(
         upload_to='products', height_field=None,
         width_field=None, max_length=None, null=True)
+    # liked = models.ManyToManyField(Customer, related_name="liked")
 
     @property
     def number_sold(self):
@@ -65,6 +66,15 @@ class Product(SafeDeleteModel):
         if len(ratings) != 0:
             avg = total_rating / len(ratings)
             return avg
+    
+    @property
+    def likes(self):
+        return self.__likes
+    
+    @likes.setter
+    def liked(self, value):
+        self.__likes = value
+
 
     class Meta:
         verbose_name = ("product")
